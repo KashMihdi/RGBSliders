@@ -11,47 +11,40 @@ struct ContentView: View {
     @State private var redColorValue = Double.random(in: 0...255)
     @State private var greenColorValue = Double.random(in: 0...255)
     @State private var blueColorValue = Double.random(in: 0...255)
-    @FocusState private var isTextFieldFocused: Bool
+
     
     var body: some View {
         ZStack {
             Color(.cyan).ignoresSafeArea()
             VStack {
-                RoundedRectangle(cornerRadius: 25)
-                    .foregroundColor(
-                        Color(
-                            red: redColorValue / 255 ,
-                            green: greenColorValue / 255,
-                            blue: blueColorValue / 255
-                        )
-                    )
-                    .frame(
-                        width: UIScreen.main.bounds.width - 32,
-                        height: UIScreen.main.bounds.height / 3
-                    )
-                    .overlay(RoundedRectangle(cornerRadius: 25)
-                        .stroke(Color(.white), lineWidth: 4))
-                    .padding(.vertical, 16)
+                ColorView(
+                    redColorValue: redColorValue,
+                    greenColorValue: greenColorValue,
+                    blueColorValue: blueColorValue
+                )
+                .padding(.vertical, 16)
                 
-                VariableElementView(colorValue: $redColorValue, color: .red)
-                VariableElementView(colorValue: $greenColorValue, color: .green)
-                VariableElementView(colorValue: $blueColorValue, color: .blue)
-                
+                DynamicColorView(sliderValue: $redColorValue,color: .red)
+                DynamicColorView(sliderValue: $greenColorValue,color: .green)
+                DynamicColorView(sliderValue: $blueColorValue,color: .blue)
+
                 Spacer()
             }
-            .focused($isTextFieldFocused)
+
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
-                    Button("Done") {
-                        isTextFieldFocused = false
-                    }
+                    Button("Done", action: hideKeyboard)
                 }
             }
         }
-        .onTapGesture {
-            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        }
+        .onTapGesture(perform: hideKeyboard)
+    }
+}
+
+extension ContentView {
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
